@@ -21,6 +21,9 @@
 .btn .btn-icon + .btn-label {
   margin-left: 8px;
 }
+.btn.btn-sm .btn-icon + .btn-label {
+  margin-left: 4px;
+}
 /* 사이즈 */
 .btn-sm {
   height: var(--size-sm);
@@ -36,6 +39,9 @@
 
 .btn.color-success {
   color: var(--color-success);
+}
+.btn.color-error {
+  color: var(--color-error);
 }
 
 /* Outline */

@@ -7,7 +7,7 @@ import ModalBase from "@admin/components/modals/ModalBase";
 import { TextInput } from "@admin/components/inputs";
 import ThemeToggleSwitch from "@shared/theme/ThemeToggleSwitch";
 import Button from "@shared/components/Button";
-import { Eye, EyeClosed, X, HelpCircle } from "lucide-react";
+import { Eye, EyeClosed, X, LogOut, HelpCircle } from "lucide-react";
 
 import useSaveAction from "@admin/components/hooks/useSaveAction";
 import useDirtyGuard from "@admin/components/hooks/useDirtyGuard";
@@ -209,19 +209,22 @@ export default function SettingPage() {
           </dd>
         </dl>
       </form>
-
-      {/* 하단 문의 아이콘 */}
-      <div className="infoButtonWrap">
-        <button
-          type="button"
-          aria-label="문의 안내 열기"
-          onClick={helpDialog.open}
-          className="helpButton"
+      <div className="settingBottomWrap">
+        <Button
+          color="error"
+          icon={<LogOut size={18} />}
+          size="sm"
+          aria-label="로그아웃"
         >
-          <HelpCircle size={24} />
-        </button>
+          로그아웃
+        </Button>
+        <Button
+          aria-label="문의 안내 열기"
+          size="sm"
+          icon={<HelpCircle size={20} />}
+          onClick={helpDialog.open}
+        />
       </div>
-
       {/* 문의 모달 */}
       <ModalBase
         isOpen={helpDialog.isOpen}

@@ -1,6 +1,21 @@
-import { useCallback, useMemo, useRef, useState } from "react";
-import ToastContext from "./ToastContext";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import "@admin/styles/modal.css"; // .toastRegion / .toast / .toast--success / .toast--error
+
+// 파일 내부 전용 컨텍스트(외부 export 없음)
+const Ctx = createContext({
+  showToast: () => {},
+  hideAll: () => {},
+  info: () => {},
+  success: () => {},
+  error: () => {},
+});
 
 export default function ToastProvider({ children }) {
   const [stack, setStack] = useState([]);
@@ -10,7 +25,8 @@ export default function ToastProvider({ children }) {
     setStack((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  // ✅ variant 우선, 없으면 type 참조. 오직 'error'/'success'만 특별 취급.
+  // ✅ variant 우선, 없으면 type.
+  //    요청대로 error/success만 특별 취급, 그 외는 info.
   const normalize = useCallback((v) => {
     const t = String(v || "")
       .toLowerCase()
@@ -24,7 +40,7 @@ export default function ToastProvider({ children }) {
     (message, opts = {}) => {
       const { variant, type, duration } = opts;
       const id = ++idRef.current;
-      const kind = normalize(variant ?? type); // ← 여기서 variant를 우선 반영
+      const kind = normalize(variant ?? type);
       const ms = Number.isFinite(duration) ? duration : 2800;
 
       setStack((prev) => [...prev, { id, message, type: kind }]);
@@ -40,7 +56,6 @@ export default function ToastProvider({ children }) {
     () => ({
       showToast,
       hideAll,
-      // sugar 메서드 (둘 다 동작)
       info: (m, o) => showToast(m, { ...(o || {}), variant: "info" }),
       success: (m, o) => showToast(m, { ...(o || {}), variant: "success" }),
       error: (m, o) => showToast(m, { ...(o || {}), variant: "error" }),
@@ -49,7 +64,7 @@ export default function ToastProvider({ children }) {
   );
 
   return (
-    <ToastContext.Provider value={api}>
+    <Ctx.Provider value={api}>
       {children}
 
       {/* modal.css 클래스 사용 */}
@@ -58,13 +73,18 @@ export default function ToastProvider({ children }) {
           <div
             key={t.id}
             role="status"
-            className={`toast toast--${t.type}`} // => toast--error / toast--success / (기본) toast
-            data-type={t.type} // 디버깅 확인용
+            className={`toast toast--${t.type}`} // toast--error / toast--success / (기본) toast
+            data-type={t.type}
           >
             {t.message}
           </div>
         ))}
       </div>
-    </ToastContext.Provider>
+    </Ctx.Provider>
   );
 }
+
+/** 사용: import ToastProvider ...; const toast = ToastProvider.useToast(); */
+ToastProvider.useToast = function useToast() {
+  return useContext(Ctx);
+};

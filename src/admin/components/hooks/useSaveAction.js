@@ -1,6 +1,6 @@
 // C:\project\florislab\src\admin\components\hooks\useSaveAction.js
 import { useRef, useState } from "react";
-import useToast from "@admin/components/modals/useToast";
+import ToastProvider from "@admin/components/modals/ToastProvider";
 
 /**
  * useSaveAction
@@ -24,7 +24,7 @@ export default function useSaveAction({
   isDirty, // boolean 또는 () => boolean
   noChangeMessage = "변경된 값이 없습니다",
 } = {}) {
-  const { showToast } = useToast();
+  const { showToast } = ToastProvider.useToast();
   const [isSaving, setIsSaving] = useState(false);
   const lastErrorsRef = useRef({});
 

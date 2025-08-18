@@ -36,11 +36,15 @@ button.blue {
   flex-direction: column;
   min-width: var(--min-width);
   max-width: var(--max-width);
-  overflow-y: auto;
   flex: 1;
+  overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--border-primary) var(--bg-page);
   position: relative;
+  background-color: var(--bg-page);
+  box-shadow: 0 2px 8px var(--bg-dim);
+}
+.adminWrap > [class*="Container"] {
 }
 /* scroll */
 
@@ -111,6 +115,7 @@ button.blue {
   background: var(--bg-surface);
   border-top: 1px solid var(--border-primary);
   padding-bottom: var(--safe-bottom);
+  z-index: 1;
 }
 .bottomNavigation {
   width: 100%;

@@ -2,7 +2,6 @@ import { Outlet } from "react-router-dom";
 import Header from "@admin/layouts/Header";
 import BottomNavigation from "./BottomNavigation";
 import ToastProvider from "@admin/components/modals/ToastProvider";
-import ConfirmProvider from "@admin/components/modals/ConfirmProvider";
 import "@admin/styles/layout.css";
 
 import { Home, Clipboard, UsersRound, MessageSquare, Bolt } from "lucide-react";
@@ -27,17 +26,13 @@ const NAV_CONFIG = {
 export default function AdminLayout() {
   return (
     <ToastProvider>
-      <ConfirmProvider>
-        <div className="adminRoot">
-          <Header navConfig={NAV_CONFIG} />
-          <div className="adminWrap">
-            <div className="contentWrap">
-              <Outlet />
-            </div>
-          </div>
-          <BottomNavigation navConfig={NAV_CONFIG} />
+      <div className="adminRoot">
+        <Header navConfig={NAV_CONFIG} />
+        <div className="adminWrap">
+          <Outlet />
         </div>
-      </ConfirmProvider>
+        <BottomNavigation navConfig={NAV_CONFIG} />
+      </div>
     </ToastProvider>
   );
 }
