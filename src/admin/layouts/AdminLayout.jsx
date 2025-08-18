@@ -1,8 +1,9 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import Header from "@admin/layouts/Header";
 import BottomNavigation from "./BottomNavigation";
 import ToastProvider from "@admin/components/modals/ToastProvider";
-import "@admin/styles/layout.css";
+import "@admin/styles/layouts.css";
 
 import { Home, Clipboard, UsersRound, MessageSquare, Bolt } from "lucide-react";
 
@@ -22,8 +23,21 @@ const NAV_CONFIG = {
     { key: "bolt", label: "설정", to: "/admin/setting" },
   ],
 };
+const AUTH_KEY = "fl.auth";
 
 export default function AdminLayout() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const authed = !!sessionStorage.getItem(AUTH_KEY);
+    if (!authed) {
+      // 주소 직입 접근 차단: 원래 가려던 경로를 state.from에 담아 보냄
+      const from = location.pathname + location.search;
+      navigate("/admin/login", { replace: true, state: { from } });
+    }
+  }, [location.pathname, location.search, navigate]);
+
   return (
     <ToastProvider>
       <div className="adminRoot">

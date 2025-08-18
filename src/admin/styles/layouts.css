@@ -1,5 +1,5 @@
 @import "@shared/theme/theme.css";
-@import "./page.css";
+@import "./pages.css";
 /* 기본 적용 */
 
 /* .adminRoot button {
@@ -21,7 +21,9 @@ button.blue {
   border-color: var(--color-blue);
   color: var(--color-blue);
 } */
-
+span + a {
+  margin-left: 4px;
+}
 .adminRoot {
   display: flex;
   flex-direction: column;

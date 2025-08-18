@@ -67,7 +67,6 @@ export default function SampleInputs() {
         ]}
       />
 
-      <h3>셀렉트 인풋</h3>
       <SelectInput
         label="워크샵 상태"
         value={status}
@@ -81,7 +80,6 @@ export default function SampleInputs() {
         ]}
       />
 
-      <h3>워크샵 설명</h3>
       <TextareaInput
         label="워크샵 설명"
         value={desc}

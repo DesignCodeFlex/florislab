@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import "@admin/styles/modal.css"; // .toastRegion / .toast / .toast--success / .toast--error
+import "@admin/styles/modals.css"; // .toastRegion / .toast / .toast--success / .toast--error
 
 // 파일 내부 전용 컨텍스트(외부 export 없음)
 const Ctx = createContext({

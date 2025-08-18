@@ -1,122 +1,78 @@
-// /src/admin/components/hooks/useDirtyGuard.js
-import { createElement, useCallback, useEffect, useState } from "react";
-import { createRoot } from "react-dom/client";
-import ModalBase from "@admin/components/modals/ModalBase";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import BottomNavigation from "@admin/layouts/BottomNavigation";
+import AuthProvider from "@admin/components/hooks/useAuth";
 
 /**
  * useDirtyGuard
- * - 폼 변경(더티) 상태를 추적하고, 이탈 시 확인을 강제합니다.
- * - (중요) 외부 confirmLeave를 사용하지 않고,
- *   ModalBase 기반의 "타이틀 없는" 내부 확인 모달만 사용합니다.
+ * - 변경 여부 추적 + 이동 전 확인
+ * - 하단 내비에 자동 등록
+ * - 확인 UI: 프로젝트 공용 ModalBase(confirm) 사용 (fallback: window.confirm)
  */
-export default function useDirtyGuard({
-  isDirty, // boolean 또는 () => boolean
-  watchBeforeUnload = true,
-} = {}) {
-  const [dirtyState, setDirtyState] = useState(false);
-  const isFn = typeof isDirty === "function";
+export default function useDirtyGuard(options = {}) {
+  const {
+    message = "변경사항이 있습니다. 저장하지 않고 이동할까요?",
+    registerBottomNav = true,
+    confirmText = "이동",
+    cancelText = "취소",
+  } = options;
 
-  const isDirtyGetter = useCallback(() => {
-    return isFn ? !!isDirty() : !!(isDirty ?? dirtyState);
-  }, [isFn, isDirty, dirtyState]);
+  // ✅ 프로젝트 공용 confirm (ModalBase). Provider 내부가 보장된 페이지에서 사용.
+  const { confirm: appConfirm } = AuthProvider.useAuth();
 
-  const markDirty = useCallback(() => {
-    if (!isFn) setDirtyState(true);
-  }, [isFn]);
+  const [dirty, setDirty] = useState(false);
+  const dirtyRef = useRef(dirty);
+  dirtyRef.current = dirty;
 
-  const markPristine = useCallback(() => {
-    if (!isFn) setDirtyState(false);
-  }, [isFn]);
-
-  const setDirty = useCallback(
-    (val) => {
-      if (!isFn) setDirtyState(!!val);
-    },
-    [isFn]
-  );
-
-  useEffect(() => {
-    if (!watchBeforeUnload) return;
-    const handler = (e) => {
-      if (!isDirtyGetter()) return;
-      e.preventDefault();
-      e.returnValue = "";
-      return "";
-    };
-    window.addEventListener("beforeunload", handler);
-    return () => window.removeEventListener("beforeunload", handler);
-  }, [watchBeforeUnload, isDirtyGetter]);
-
-  const defaultConfirm = (message) => {
-    return new Promise((resolve) => {
-      const container = document.createElement("div");
-      document.body.appendChild(container);
-      const root = createRoot(container);
-
-      let closed = false;
-      const cleanup = (ok) => {
-        if (closed) return;
-        closed = true;
-        try {
-          root.unmount();
-        } catch (e) {
-          void e;
-        }
-        if (container.parentNode) document.body.removeChild(container);
-        resolve(ok);
-      };
-
-      root.render(
-        createElement(
-          ModalBase,
-          {
-            isOpen: true,
-            ariaLabel: "확인",
-            onClose: () => cleanup(false),
-            actions: [
-              {
-                label: "머무르기",
-                onPress: () => cleanup(false),
-              },
-              {
-                label: "이동",
-                onPress: () => cleanup(true),
-              },
-            ],
-          },
-          createElement("p", null, message)
-        )
-      );
-    });
-  };
+  const markDirty = useCallback(() => setDirty(true), []);
+  const markPristine = useCallback(() => setDirty(false), []);
 
   const shouldProceed = useCallback(
-    async (
-      message = "변경사항이 있습니다. 저장하지 않고 이동하시겠습니까?"
-    ) => {
-      if (!isDirtyGetter()) return true;
-      return await defaultConfirm(message);
+    async (msg = message) => {
+      if (!dirtyRef.current) return true;
+
+      // 우선 공용 모달 사용
+      if (typeof appConfirm === "function") {
+        return await appConfirm({ message: msg, confirmText, cancelText });
+      }
+      // 혹시 모달 컨텍스트가 없으면 브라우저 confirm으로 폴백
+      return window.confirm(msg);
     },
-    [isDirtyGetter]
+    [appConfirm, message, confirmText, cancelText]
   );
 
   const withGuard = useCallback(
-    (fn, message) => {
+    (fn, msg = message) => {
       return async (...args) => {
-        const ok = await shouldProceed(message);
-        if (!ok) return false;
+        const ok = await shouldProceed(msg);
+        if (!ok) return;
         return fn?.(...args);
       };
     },
-    [shouldProceed]
+    [message, shouldProceed]
   );
 
-  return {
-    isDirty: isDirtyGetter(),
-    markDirty,
-    markPristine,
-    setDirty,
-    shouldProceed,
-    withGuard,
-  };
+  // 하단 내비 자동 등록
+  useEffect(() => {
+    if (!registerBottomNav) return;
+
+    BottomNavigation.bus.setGuard(
+      {
+        isDirty: () => dirtyRef.current,
+        shouldProceed,
+      },
+      { message }
+    );
+    return () => BottomNavigation.bus.clearGuard();
+  }, [message, registerBottomNav, shouldProceed]);
+
+  return useMemo(
+    () => ({
+      isDirty: dirty,
+      markDirty,
+      markPristine,
+      withGuard,
+      shouldProceed,
+    }),
+    [dirty, markDirty, markPristine, withGuard, shouldProceed]
+  );
 }

@@ -40,7 +40,7 @@
 
 html,
 body {
-  background: var(--bg-dim);
+  background: var(--bg-page);
   color: var(--text-color);
   margin: 0;
   padding: 0;
@@ -50,7 +50,7 @@ body {
 .landingRoot,
 .userRoot,
 .themeScope {
-  background: var(--bg-dim);
+  background: var(--bg-page);
   color: var(--text-color);
   min-height: 100vh;
 }

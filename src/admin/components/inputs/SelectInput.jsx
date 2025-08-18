@@ -8,9 +8,10 @@ import {
   useFocusRing,
   useListBox,
   useOption,
+  useOverlay,
+  DismissButton,
 } from "react-aria";
 import { useSelectState, Item } from "react-stately";
-import Button from "@shared/components/Button";
 import { ChevronDown } from "lucide-react";
 
 export function SelectInput({
@@ -39,20 +40,19 @@ export function SelectInput({
 
   return (
     <div className="inputWrapper">
-      {/* 라벨 */}
       <div className="inputLabelRow">
         <label {...labelProps} className="inputLabel">
           {label}
         </label>
       </div>
 
-      {/* 트리거 */}
       <HiddenSelect
         state={state}
         triggerRef={triggerRef}
         label={label}
         name={label}
       />
+
       <button
         {...mergeProps(buttonProps, focusProps)}
         ref={triggerRef}
@@ -63,20 +63,41 @@ export function SelectInput({
         <span {...valueProps}>
           {state.selectedItem ? state.selectedItem.rendered : placeholder}
         </span>
-
-        {/* 아이콘을 span으로, 버튼처럼 보이게 */}
         <span className="selectIconButton">
           <ChevronDown size={20} />
         </span>
       </button>
 
-      {/* 옵션 메뉴 */}
-      {state.isOpen && <ListBox state={state} menuProps={menuProps} />}
+      {state.isOpen && (
+        <Popover state={state}>
+          <ListBox state={state} menuProps={menuProps} />
+        </Popover>
+      )}
     </div>
   );
 }
 
-/* -------------------- ListBox -------------------- */
+function Popover({ children, state }) {
+  const ref = useRef();
+  const { overlayProps } = useOverlay(
+    {
+      isOpen: state.isOpen,
+      onClose: state.close,
+      shouldCloseOnBlur: true,
+      isDismissable: true,
+    },
+    ref
+  );
+
+  return (
+    <div {...overlayProps} ref={ref} className="selectPopover">
+      <DismissButton onDismiss={state.close} />
+      {children}
+      <DismissButton onDismiss={state.close} />
+    </div>
+  );
+}
+
 function ListBox({ state, menuProps }) {
   const ref = useRef();
   const { listBoxProps } = useListBox(menuProps, state, ref);
@@ -89,7 +110,6 @@ function ListBox({ state, menuProps }) {
   );
 }
 
-/* -------------------- Option -------------------- */
 function Option({ item, state }) {
   const ref = useRef();
   const { optionProps, isSelected, isFocused } = useOption(

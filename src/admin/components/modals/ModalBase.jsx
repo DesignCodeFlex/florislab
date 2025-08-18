@@ -1,10 +1,12 @@
 import { ModalOverlay, Modal, Dialog } from "react-aria-components";
-import "@admin/styles/modal.css";
+import Button from "@shared/components/Button";
+import "@admin/styles/modals.css";
 
 /**
  * 만능 모달 쉘
  * - title이 있으면 헤더 노출, 없으면 헤더 생략
- * - actions 배열이 있으면 푸터 버튼 자동 생성
+ * - actions 배열이 있으면 푸터 버튼 자동 생성(공용 Button 사용)
+ * - footer(ReactNode)가 있으면 footer를 우선 렌더(actions 무시)
  * - variant="dialog" | "sheet" (하단 슬라이드)
  * - ariaLabel은 title이 없을 때 접근성 레이블로 사용
  */
@@ -13,7 +15,8 @@ export default function ModalBase({
   onClose = () => {},
   title, // string | ReactNode | undefined
   ariaLabel = "dialog", // title이 없을 때만 사용
-  actions = [], // [{label, onPress, variant, autoFocus}]
+  actions = [], // [{ label, onClick|onPress, color, variant, size, icon, autoFocus }]
+  footer, // ReactNode 커스텀 풋터 (있으면 actions 무시)
   variant = "dialog", // "dialog" | "sheet"
   className = "",
   children,
@@ -22,6 +25,19 @@ export default function ModalBase({
     variant === "sheet"
       ? `modalContainer modalContainer--sheet ${className}`
       : `modalContainer ${className}`;
+
+  const handleActionClick = async (action) => {
+    const { onClick, onPress } = action || {};
+    if (typeof onClick === "function") await onClick();
+    else if (typeof onPress === "function") await onPress();
+    onClose(); // 동작 후 닫기
+  };
+
+  // (하위 호환) 기존 variant 값(danger/secondary 등)을 Button props로 매핑
+  const mapLegacyVariant = (v) => {
+    if (v === "danger") return { color: "error", variant: "solid" };
+    return {}; // primary or unknown -> Button 기본
+  };
 
   return (
     <ModalOverlay
@@ -53,33 +69,38 @@ export default function ModalBase({
           {/* Body */}
           <div className="modalBody">{children}</div>
 
-          {/* Footer (옵션) */}
-          {Array.isArray(actions) && actions.length > 0 && (
+          {/* Footer */}
+          {footer ? (
+            <div className="modalFooter">{footer}</div>
+          ) : Array.isArray(actions) && actions.length > 0 ? (
             <div className="modalFooter">
-              {actions.map((btn, idx) => {
+              {actions.map((a, idx) => {
                 const {
                   label,
-                  onPress,
-                  variant: v = "primary", // primary | secondary | danger | ghost
+                  color, // success | warning | error
+                  icon,
                   autoFocus,
-                } = btn;
+                  ...rest
+                } = a || {};
+
+                // 레거시 v 매핑(primary/secondary/danger/ghost)
+                const legacy = mapLegacyVariant(a?.variant);
+
                 return (
-                  <button
+                  <Button
                     key={idx}
-                    type="button"
-                    className={`modalButton modalButton--${v}`}
+                    color={color ?? legacy.color}
+                    icon={icon}
                     autoFocus={autoFocus}
-                    onClick={async () => {
-                      if (onPress) await onPress(); // 이동 확정/취소 먼저 결정
-                      onClose(); // 그 다음 닫기 (두 번 닫혀도 내부에서 안전)
-                    }}
+                    onClick={() => handleActionClick(a)}
+                    {...rest}
                   >
                     {label}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
-          )}
+          ) : null}
         </Dialog>
       </Modal>
     </ModalOverlay>
