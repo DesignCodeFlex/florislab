@@ -1,35 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 
-function App() {
-  const [count, setCount] = useState(0)
+import ThemeProvider from "@shared/theme/ThemeProvider";
 
+import LandingLayout from "@landing/layouts/LandingLayout";
+import LandingHome from "@landing/pages/LandingHome";
+
+import AdminRouter from "@routes/adminRoutes";
+import UserRouter from "@routes/userRoutes";
+
+/** 라우트 스코프: 랜딩 테마 */
+function LandingThemeScope() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ThemeProvider storageKey="landing-theme">
+      <Outlet />
+    </ThemeProvider>
+  );
 }
 
-export default App
+/** 라우트 스코프: 어드민 테마 (로그인 포함 /admin 전체 공유) */
+function AdminThemeScope() {
+  return (
+    <ThemeProvider storageKey="admin-theme">
+      <Outlet />
+    </ThemeProvider>
+  );
+}
+
+/** 라우트 스코프: 유저 테마 */
+function UserThemeScope() {
+  return (
+    <ThemeProvider storageKey="user-theme">
+      <Outlet />
+    </ThemeProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* 랜딩: 테마 스코프 -> 레이아웃 -> 홈 */}
+        <Route element={<LandingThemeScope />}>
+          <Route element={<LandingLayout />}>
+            <Route path="/" element={<LandingHome />} />
+          </Route>
+        </Route>
+
+        {/* 어드민: 테마 스코프 한 번만 (AdminLayout 유무와 무관하게 /admin 전체에 적용) */}
+        <Route element={<AdminThemeScope />}>
+          <Route path="/admin/*" element={<AdminRouter />} />
+        </Route>
+
+        {/* 유저: 테마 스코프 한 번만 */}
+        <Route element={<UserThemeScope />}>
+          <Route path="/user/*" element={<UserRouter />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}

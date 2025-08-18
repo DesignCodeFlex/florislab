@@ -1,0 +1,251 @@
+/* src/admin/styles/input.css */
+
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.inputWrapper + .inputWrapper {
+  margin-top: 24px;
+}
+.inputLabelRow {
+  height: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.inputLabel {
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+.inputError {
+  line-height: 1;
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+}
+.inputError svg {
+  display: inline-flex;
+  color: var(--color-error);
+  margin-left: 2px;
+}
+.inputFieldWrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  height: var(--size-md);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.inputFieldWrapper:focus-within {
+  border-color: var(--color-link);
+}
+
+.inputWrapper.has-error .inputFieldWrapper {
+  border-color: var(--color-error);
+}
+
+.inputField {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-color);
+  padding-left: 16px;
+}
+
+.inputRightElement {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.inputRightElement .btn {
+  font-size: 14px;
+  padding: 0 16px;
+}
+.inputRightElement .btn .btn-icon + .btn-label {
+  margin-left: 4px;
+}
+
+/*select*/
+/* -------------------- Select Input -------------------- */
+/* SelectInput */
+.selectTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 0 16px;
+  cursor: pointer;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  height: var(--size-md);
+}
+
+.selectTrigger.focus-visible {
+  outline: none;
+  border-color: var(--color-link);
+}
+
+.selectIconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-md);
+  height: var(--size-md);
+  border-radius: 8px;
+  cursor: pointer;
+
+  /* 버튼처럼 보이게 */
+  background: transparent;
+  color: var(--text-color);
+  transition: background 0.2s;
+}
+
+.selectMenu {
+  position: absolute;
+  margin-top: 77px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  list-style: none;
+  padding: 4px 0;
+  z-index: 1000;
+  min-width: 100%;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.selectOption {
+  padding: 8px 16px;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.selectOption.selected {
+  background: var(--color-link);
+  color: var(--color-white);
+}
+
+/* check radio  */
+/* -------------------- Checkbox -------------------- */
+/* -------------------- Checkbox -------------------- */
+.checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  margin: 6px 0;
+  min-height: 48px; /* ✅ 터치 영역 확보 */
+  padding: 0 4px; /* 좌우 여백 */
+}
+
+.checkboxInput {
+  display: none;
+}
+
+.checkboxBox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #666;
+  border-radius: 4px;
+  margin-right: 12px;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.checkboxIcon {
+  width: 14px;
+  height: 14px;
+  display: none;
+}
+
+.checkboxInput:checked + .checkboxBox {
+  background: #2684ff;
+  border-color: #2684ff;
+}
+
+.checkboxInput:checked + .checkboxBox .checkboxIcon {
+  display: block;
+}
+
+.checkboxLabel {
+  font-size: 15px;
+  color: var(--text-color, #333);
+  line-height: 1.4;
+}
+
+.checkbox.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* -------------------- Radio -------------------- */
+.radioGroupWrapper {
+  margin: 10px 0;
+}
+
+.radioGroupLabel {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color, #333);
+}
+
+.radioOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  min-height: 48px; /* ✅ 터치 영역 확보 */
+  padding: 0 4px;
+}
+
+.radioInput {
+  display: none;
+}
+
+.radioCircle {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #666;
+  border-radius: 50%;
+  margin-right: 12px;
+  position: relative;
+}
+
+.radioInput:checked + .radioCircle::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 10px;
+  height: 10px;
+  background: #2684ff;
+  border-radius: 50%;
+}
+
+.radioLabel {
+  font-size: 15px;
+  color: var(--text-color, #333);
+}
+
+.radio.selected .radioCircle {
+  border-color: #2684ff;
+}

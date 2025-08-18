@@ -1,0 +1,88 @@
+/* 공통 */
+.btn {
+  position: relative;
+  overflow: hidden;
+  font-family: inherit;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  min-width: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-color);
+  height: var(--size-md);
+  padding: 0 8px;
+  line-height: 1;
+}
+.btn .btn-icon + .btn-label {
+  margin-left: 8px;
+}
+/* 사이즈 */
+.btn-sm {
+  height: var(--size-sm);
+  font-size: 14px;
+  border-radius: 4px;
+}
+.btn-md {
+  height: var(--size-md);
+}
+.btn-lg {
+  height: var(--size-lg);
+}
+
+.btn.color-success {
+  color: var(--color-success);
+}
+
+/* Outline */
+.btn-outline {
+  border: 1px solid currentColor;
+}
+/* 
+.btn-outline-primary {
+  color: var(--color-success);
+}
+.btn-outline-warning {
+  color: var(--color-warning);
+}
+.btn-outline-error {
+  color: var(--color-error);
+} */
+
+/* Solid */
+.btn-solid {
+  color: var(--color-white);
+}
+.btn-solid.color-success {
+  background: var(--color-success);
+}
+.btn-solid-warning {
+  background: var(--color-warning);
+}
+.btn-solid-error {
+  background: var(--color-error);
+}
+
+/* Ripple */
+.ripple-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.15); /* 대비 확실히 */
+  transform: scale(0);
+  animation: ripple 600ms linear;
+}
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}

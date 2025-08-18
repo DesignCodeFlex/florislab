@@ -1,0 +1,56 @@
+:root {
+  /* 공통  */
+  --color-orange: #ff8c42;
+  --color-blue: #3795f4;
+  --color-link: #3f51b5;
+  --color-error: #ed4c5c;
+  --color-warning: #ffc107;
+  --color-success: #4caf50;
+  --color-white: #ffffff;
+
+  --min-width: 344px;
+  --max-width: 1024px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  --size-sm: 32px;
+  --size-md: 48px;
+  --size-lg: 64px;
+
+  --bg-page: #f8f8f8;
+  --bg-surface: #ffffff;
+  --bg-dim: rgba(0, 0, 0, 0.12);
+  --text-color: #222222;
+  --text-secondary: #888888;
+  --text-disabled: #bdbdbd;
+  --border-primary: #e0e0e0;
+  --border-secondary: #eeeeee;
+}
+
+/* 다크 테마 오버라이드 */
+[data-theme="dark"] {
+  --bg-page: #121212;
+  --bg-surface: #1e1e1e;
+  --bg-dim: rgba(255, 255, 255, 0.12);
+  --text-color: #fafafa;
+  --text-secondary: #bbbbbb;
+  --text-disabled: #777777;
+  --border-primary: #333333;
+  --border-secondary: #2a2a2a;
+}
+
+html,
+body {
+  background: var(--bg-page);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+}
+
+.adminRoot,
+.landingRoot,
+.userRoot,
+.themeScope {
+  background: var(--bg-page);
+  color: var(--text-color);
+  min-height: 100vh;
+}
